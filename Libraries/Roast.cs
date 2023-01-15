@@ -1,4 +1,5 @@
 ﻿using swf.Models;
+using swf.Models.DBObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,32 +18,40 @@ namespace SWF
             Random rnd = new Random();
             do
             {
-                for (var weekDay = 0; weekDay < weekDays.GetLength(1); weekDay++)
-                {
-                    //## 1
-                    if (weekDay == 8 && engineersSelection.Min() == 0)
-                    {
-                        break;
-                    }
-
-                    var morningShift = SelectUntilFindsEligible(engineers.Count, weekDays, weekDay, engineersSelection, engineers);
-                    weekDays[0, weekDay] = morningShift.Item1;
-                    engineersSelection[morningShift.Item2] += 1;
-
-                    var eveningShift = SelectUntilFindsEligible(engineers.Count, weekDays, weekDay, engineersSelection, engineers);
-                    weekDays[1, weekDay] = eveningShift.Item1;
-                    engineersSelection[eveningShift.Item2] += 1;
-
-                    if (weekDay == 9)
-                    {
-                        eligibleList = true;
-                    };
-
-                }
+                eligibleList = ReturnEligibleList(weekDays, engineersSelection, engineers);
+                //reset engineersSelection and weekDays arrays in case the list builded is not eligible
+                //is breaking at weekday 8 for example
+                for(int i=0; i < engineers.Count; i++) { engineersSelection[i] = 0; }
+                Guid guidX = Guid.Parse("00000000-0000-0000-0000-000000000000");
+                for (int y=0; y < 10; y++) { weekDays[0, y] = guidX; weekDays[1, y] = guidX; }
 
             }
             while (!eligibleList);
             return weekDays;
+        }
+        private static bool ReturnEligibleList(Guid[,] weekDays, 
+                                               int[] engineersSelection,
+                                               List<EngineerModel> engineers)
+        {
+            for (var weekDay = 0; weekDay < weekDays.GetLength(1); weekDay++)
+            {
+                //## 1
+                if (weekDay == 8 && engineersSelection.Min() == 0)
+                {
+                    return false;
+                }
+
+                var morningShift = SelectUntilFindsEligible(engineers.Count, weekDays, weekDay, engineersSelection, engineers);
+                weekDays[0, weekDay] = morningShift.Item1;
+                engineersSelection[morningShift.Item2] += 1;
+
+                var eveningShift = SelectUntilFindsEligible(engineers.Count, weekDays, weekDay, engineersSelection, engineers);
+                weekDays[1, weekDay] = eveningShift.Item1;
+                engineersSelection[eveningShift.Item2] += 1;
+
+                
+            }
+            return true;
         }
         private static (Guid, int) SelectUntilFindsEligible(int selectionLength,
                                                    Guid[,] weekDays,
@@ -73,13 +82,14 @@ namespace SWF
                                                int[] engineersSelection,
                                                int rndSelection)
         {
+            Guid guidX = Guid.Parse("00000000-0000-0000-0000-000000000000");
             //## 2
             if (weekDay>0 && (weekDays[0, weekDay - 1] == selectedEngineer || weekDays[1, weekDay - 1] == selectedEngineer))
             {
                 return false;
             }
             //## 3
-            if (weekDays[0, weekDay] == weekDays[1, weekDay] ) return false;
+            if (weekDays[0, weekDay] == weekDays[1, weekDay] && weekDays[0,weekDay]!= guidX) return false;
 
             //## 4
             var minShifts = engineersSelection.Min();

@@ -56,11 +56,13 @@ namespace swf.Controllers
                 {
                     //we will generate both the current and next week
                     weekSchedule = Roast.Return2WeeksSchedule(engineers);
+                    int i = 0;
+                    return StatusCode(StatusCodes.Status200OK, engineers[0].FullName);
                 }
             }
 
 
-            return StatusCode(StatusCodes.Status200OK,weekSchedule);
+            return StatusCode(StatusCodes.Status200OK);
         } 
         
         //// GET api/WeeklySchedule/5
