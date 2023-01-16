@@ -18,6 +18,7 @@ namespace swf.Repository
             {
                 model.IdWeek = dbobject.IdWeek;
                 model.WeekNo = dbobject.WeekNo;
+                model.YearNo=dbobject.YearNo;
                 model.IsSetted = dbobject.IsSetted;
             }
             return model;
@@ -29,6 +30,7 @@ namespace swf.Repository
             {
                 dbobject.IdWeek = model.IdWeek;
                 dbobject.WeekNo = model.WeekNo;
+                dbobject.YearNo= model.YearNo;
                 dbobject.IsSetted = model.IsSetted;
             }
             return dbobject;
@@ -52,7 +54,7 @@ namespace swf.Repository
         }
         public void InsertWeek(WeekModel model)
         {
-            model.IdWeek=Guid.NewGuid();
+            //model.IdWeek=Guid.NewGuid();
             _db.Weeks.Add(MapModelToDBObject(model));
             _db.SaveChanges();
         }

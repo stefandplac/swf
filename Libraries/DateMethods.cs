@@ -9,8 +9,12 @@ namespace swf.Libraries
         public static int ReturnWeekNo()
         {
             //## 1
-            DateTime now = DateTime.Now;
-            return ISOWeek.GetWeekOfYear(now);
+            return ISOWeek.GetWeekOfYear(DateTime.Now);
+        }
+        public static int ReturnYear()
+        {
+            
+            return ISOWeek.GetYear(DateTime.Now);
         }
     }
 }

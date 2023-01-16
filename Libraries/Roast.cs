@@ -10,30 +10,38 @@ namespace SWF
 {
     static class Roast
     {
-        public static Guid[,] Return2WeeksSchedule(List<EngineerModel> engineers)
+        public static void Return2WeeksSchedule(
+                                                   List<EngineerModel> engineers, 
+                                                   int startIndex,
+                                                   Guid[,] weekDays,
+                                                   int[] engineersSelection)
         {
-            Guid[,] weekDays = new Guid[2, 10];
-            int[] engineersSelection = new int[engineers.Count];
+            
             bool eligibleList = false;
             Random rnd = new Random();
             do
             {
-                eligibleList = ReturnEligibleList(weekDays, engineersSelection, engineers);
-                //reset engineersSelection and weekDays arrays in case the list builded is not eligible
-                //is breaking at weekday 8 for example
-                for(int i=0; i < engineers.Count; i++) { engineersSelection[i] = 0; }
-                Guid guidX = Guid.Parse("00000000-0000-0000-0000-000000000000");
-                for (int y=0; y < 10; y++) { weekDays[0, y] = guidX; weekDays[1, y] = guidX; }
+                eligibleList = ReturnEligibleList(weekDays, engineersSelection, engineers, startIndex);
+
+                if (!eligibleList)
+                {
+                    //reset engineersSelection and weekDays arrays in case the list builded is not eligible
+                    //is breaking at weekday 8 for example
+                    for (int i = startIndex; i < engineers.Count; i++) { engineersSelection[i] = 0; }
+                    Guid guidX = Guid.Parse("00000000-0000-0000-0000-000000000000");
+                    for (int y = startIndex; y < 10; y++) { weekDays[0, y] = guidX; weekDays[1, y] = guidX; }
+                }
 
             }
             while (!eligibleList);
-            return weekDays;
+            
         }
         private static bool ReturnEligibleList(Guid[,] weekDays, 
                                                int[] engineersSelection,
-                                               List<EngineerModel> engineers)
+                                               List<EngineerModel> engineers,
+                                               int startIndex)
         {
-            for (var weekDay = 0; weekDay < weekDays.GetLength(1); weekDay++)
+            for (var weekDay = startIndex; weekDay < weekDays.GetLength(1); weekDay++)
             {
                 //## 1
                 if (weekDay == 8 && engineersSelection.Min() == 0)
@@ -41,11 +49,11 @@ namespace SWF
                     return false;
                 }
 
-                var morningShift = SelectUntilFindsEligible(engineers.Count, weekDays, weekDay, engineersSelection, engineers);
+                var morningShift = SelectEngineerUntilEligible(engineers.Count, weekDays, weekDay, engineersSelection, engineers);
                 weekDays[0, weekDay] = morningShift.Item1;
                 engineersSelection[morningShift.Item2] += 1;
 
-                var eveningShift = SelectUntilFindsEligible(engineers.Count, weekDays, weekDay, engineersSelection, engineers);
+                var eveningShift = SelectEngineerUntilEligible(engineers.Count, weekDays, weekDay, engineersSelection, engineers);
                 weekDays[1, weekDay] = eveningShift.Item1;
                 engineersSelection[eveningShift.Item2] += 1;
 
@@ -53,7 +61,7 @@ namespace SWF
             }
             return true;
         }
-        private static (Guid, int) SelectUntilFindsEligible(int selectionLength,
+        private static (Guid, int) SelectEngineerUntilEligible(int selectionLength,
                                                    Guid[,] weekDays,
                                                    int weekDay,
                                                    int[] engineersSelection,
@@ -84,7 +92,7 @@ namespace SWF
         {
             Guid guidX = Guid.Parse("00000000-0000-0000-0000-000000000000");
             //## 2
-            if (weekDay>0 && (weekDays[0, weekDay - 1] == selectedEngineer || weekDays[1, weekDay - 1] == selectedEngineer))
+            if ((weekDay!=0 && weekDay!=5) && (weekDays[0, weekDay - 1] == selectedEngineer || weekDays[1, weekDay - 1] == selectedEngineer))
             {
                 return false;
             }
@@ -110,7 +118,8 @@ namespace SWF
 //will cause a continuous loop so we need to break it and start again
 
 //## 2
-//check this only if the weekday is not monday
+//check this only if the weekday is not mondayFirstWeek or mondaySecondWeek - 
+//the condition will not be checked when the previous days are weekend days
 //check the condition of previous day -- no engineer can have shifts on 2 consecutive days
 
 //## 3

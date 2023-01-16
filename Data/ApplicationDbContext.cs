@@ -47,7 +47,7 @@ namespace swf.Data
             modelBuilder.Entity<Week>(entity =>
             {
                 entity.HasKey(e => e.IdWeek)
-                    .HasName("PK__Weeks__24F85D29032B00FD");
+                    .HasName("PK__Weeks__24F85D29CABCF9B2");
 
                 entity.Property(e => e.IdWeek).ValueGeneratedNever();
             });
@@ -55,7 +55,7 @@ namespace swf.Data
             modelBuilder.Entity<WeeklySchedule>(entity =>
             {
                 entity.HasKey(e => e.IdSchedule)
-                    .HasName("PK__WeeklySc__D16D3B6209944AC4");
+                    .HasName("PK__WeeklySc__D16D3B62B16541A7");
 
                 entity.ToTable("WeeklySchedule");
 

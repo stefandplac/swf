@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using swf.Data;
 using swf.Libraries;
+using swf.Libraries.BusinessLogic.WeeklySchedule;
 using swf.Models;
 using swf.Repository;
 using swf.ViewModels;
 using SWF;
+using System.Globalization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -30,45 +32,18 @@ namespace swf.Controllers
         public ActionResult Return2WeeksSchedule()
         {
             //## 1
-            List<EngineerModel> engineers = engineerRepository.GetAllEngineers().OrderBy(engineer=>engineer.FullName).ToList();
+            WeeklyScheduleActions.Return2WeeksScheduleActionBuildRandom(engineerRepository, weekRepository, weeklyScheduleRepository);
+            
+            //## Response
             var currentWeekNo = DateMethods.ReturnWeekNo();
+            var currentWeekID = weekRepository.GetWeekByWeekNO(currentWeekNo).IdWeek;
+            var currentWeekSchedule = weeklyScheduleRepository.GetCurrentWeekSchedule(currentWeekID).ToList();
+            return StatusCode(StatusCodes.Status200OK, ISOWeek.ToDateTime(2023, currentWeekNo, (DayOfWeek)1));
 
-            //check if the currentWeek and previousWeek were setted
-            var previousWeek = weekRepository.GetWeekByWeekNO(currentWeekNo-1);
-            var currentWeek = weekRepository.GetWeekByWeekNO(currentWeekNo);
-            Guid[,] weekSchedule;
-            if (currentWeek.IsSetted)
-            {
-                //return roast for the current week that already exist in the database
-                var currentWeekID = weekRepository.GetWeekByWeekNO(currentWeekNo).IdWeek;
-                var currentWeekSchedule = weeklyScheduleRepository.GetCurrentWeekSchedule(currentWeekID).ToList();
-            }
-            else
-            {
-                //the current week is not setted yet
-                //check first to see if the previous week is setted
-                if (previousWeek.IsSetted)
-                {
-                    //we take all the previous week data and we will use that data to generate the current week schedule
-
-                }
-                else
-                {
-                    //we will generate both the current and next week
-                    weekSchedule = Roast.Return2WeeksSchedule(engineers);
-                    int i = 0;
-                    return StatusCode(StatusCodes.Status200OK, engineers[0].FullName);
-                }
-            }
-
-
-            return StatusCode(StatusCodes.Status200OK);
         } 
         
         //// GET api/WeeklySchedule/5
         //[HttpGet("{id}")]
-        
-
         
     }
 }

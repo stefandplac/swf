@@ -66,6 +66,14 @@ namespace swf.Repository
             _db.WeeklySchedules.Add(MapModelToDBObject(model));
             _db.SaveChanges();
         }
+        public void InsertManyWeekDaySchedule(List<WeeklyScheduleModel> weekDays)
+        {
+            foreach(var weekDay in weekDays)
+            {
+                _db.WeeklySchedules.Add(MapModelToDBObject(weekDay));
+            }
+            _db.SaveChanges();
+        }
         public void UpdateWeekdaySchedule(WeeklyScheduleModel model)
         {
             var dbobject = _db.WeeklySchedules.FirstOrDefault(schedule => schedule.IdSchedule == model.IdSchedule);
