@@ -49,11 +49,11 @@ namespace SWF
                     return false;
                 }
 
-                var morningShift = SelectEngineerUntilEligible(engineers.Count, weekDays, weekDay, engineersSelection, engineers);
+                var morningShift = SelectEngineerUntilEligible(engineers.Count, weekDays, weekDay, engineersSelection, engineers,"MorningShift");
                 weekDays[0, weekDay] = morningShift.Item1;
                 engineersSelection[morningShift.Item2] += 1;
 
-                var eveningShift = SelectEngineerUntilEligible(engineers.Count, weekDays, weekDay, engineersSelection, engineers);
+                var eveningShift = SelectEngineerUntilEligible(engineers.Count, weekDays, weekDay, engineersSelection, engineers,"EveningShift");
                 weekDays[1, weekDay] = eveningShift.Item1;
                 engineersSelection[eveningShift.Item2] += 1;
 
@@ -65,7 +65,8 @@ namespace SWF
                                                    Guid[,] weekDays,
                                                    int weekDay,
                                                    int[] engineersSelection,
-                                                   List<EngineerModel> engineers
+                                                   List<EngineerModel> engineers,
+                                                   string shift
                                                    )
         {
 
@@ -77,7 +78,7 @@ namespace SWF
             {
                 rndSelection = rnd.Next(0, selectionLength);
                 engineerId = engineers[rndSelection].IdEngineer;
-                isEligible = CheckEligibility(engineerId, weekDays, weekDay, engineersSelection,rndSelection);
+                isEligible = CheckEligibility(engineerId, weekDays, weekDay, engineersSelection,rndSelection, shift);
                 
             }
             while (!isEligible);
@@ -88,16 +89,21 @@ namespace SWF
                                                Guid[,] weekDays, 
                                                int weekDay,
                                                int[] engineersSelection,
-                                               int rndSelection)
+                                               int rndSelection,
+                                               string shift)
         {
-            Guid guidX = Guid.Parse("00000000-0000-0000-0000-000000000000");
+            
+
             //## 2
-            if ((weekDay!=0 && weekDay!=5) && (weekDays[0, weekDay - 1] == selectedEngineer || weekDays[1, weekDay - 1] == selectedEngineer))
+            if (weekDay>0 && (weekDays[0, weekDay - 1]==selectedEngineer || weekDays[1, weekDay - 1]==selectedEngineer))
             {
                 return false;
             }
             //## 3
-            if (weekDays[0, weekDay] == weekDays[1, weekDay] && weekDays[0,weekDay]!= guidX) return false;
+            if (shift.Equals("EveningShift") && (weekDays[0, weekDay].Equals(selectedEngineer)) )
+            { 
+                return false; 
+            }
 
             //## 4
             var minShifts = engineersSelection.Min();

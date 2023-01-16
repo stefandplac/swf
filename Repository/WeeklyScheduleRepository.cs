@@ -60,6 +60,16 @@ namespace swf.Repository
             }
             return currentWeekSchedule;
         }
+        public List<WeeklyScheduleModel> ReturnCurrentAndNextWeekSchedule(Guid currentWeekId, Guid nextWeekId)
+        {
+            var scheduleCurrentNextDBObjects = _db.WeeklySchedules.Where(weekDay=> weekDay.WeekId== currentWeekId || weekDay.WeekId== nextWeekId );
+            var scheduleCurrentNext = new List<WeeklyScheduleModel>();
+            foreach(var weekDay in scheduleCurrentNextDBObjects)
+            {
+                scheduleCurrentNext.Add(MapDBObjectToModel(weekDay));
+            }
+            return scheduleCurrentNext;
+        }
         public void InsertWeekDaySchedule(WeeklyScheduleModel model)
         {
             model.IdSchedule = Guid.NewGuid();

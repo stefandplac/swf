@@ -1,29 +1,28 @@
 ﻿using swf.Models;
 using swf.Repository;
+using System.Globalization;
 
 namespace swf.ViewModels
 {
     public class WeeklySchedulesWithCustomersData
     {
-        public string FirstHalfEngineerName { get; set; }
-        public string SecondHalfEngineerName { get; set; }
-        public Guid IdSchedule { get; set; }
-        public Guid WeekId { get; set; }
-        public short WeekDay { get; set; }
-        public Guid FirstHalfEngineerId { get; set; }
-        public Guid SecondHalfEngineerId { get; set; }
+        public DateTime WeekDayDate { get; set; }
+        public string MorningShiftEngineer { get; set; }
+        public string EveningShiftEngineer { get; set; }
+        public int WeekNo { get; set; }
+
         public WeeklySchedulesWithCustomersData(
                                                 WeeklyScheduleModel weeklySchedule,
-                                                EngineerRepository engineers
+                                                EngineerRepository engineers,
+                                                int weekNo,
+                                                int year
                                                 )
         {
-            IdSchedule= weeklySchedule.IdSchedule;
-            WeekId = weeklySchedule.WeekId;
-            WeekDay = weeklySchedule.WeekDay;
-            FirstHalfEngineerId = weeklySchedule.FirstHalfEngineerId;
-            SecondHalfEngineerId = weeklySchedule.SecondHalfEngineerId;
-            FirstHalfEngineerName = engineers.GetEngineerById(weeklySchedule.FirstHalfEngineerId).FullName;
-            SecondHalfEngineerName = engineers.GetEngineerById(weeklySchedule.SecondHalfEngineerId).FullName;
+            WeekNo = weekNo;
+            WeekDayDate = ISOWeek.ToDateTime(year,weekNo, (DayOfWeek)weeklySchedule.WeekDay);
+            MorningShiftEngineer = engineers.GetEngineerById(weeklySchedule.FirstHalfEngineerId).FullName;
+            EveningShiftEngineer = engineers.GetEngineerById(weeklySchedule.SecondHalfEngineerId).FullName;
         }
+        
     }
 }

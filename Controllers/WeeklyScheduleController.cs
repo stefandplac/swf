@@ -32,13 +32,33 @@ namespace swf.Controllers
         public ActionResult Return2WeeksSchedule()
         {
             //## 1
-            WeeklyScheduleActions.Return2WeeksScheduleActionBuildRandom(engineerRepository, weekRepository, weeklyScheduleRepository);
-            
+            var weekDays=WeeklyScheduleActions.Return2WeeksScheduleActionBuildRandom(engineerRepository, weekRepository, weeklyScheduleRepository);
+
             //## Response
+            var x = 0;
             var currentWeekNo = DateMethods.ReturnWeekNo();
             var currentWeekID = weekRepository.GetWeekByWeekNO(currentWeekNo).IdWeek;
-            var currentWeekSchedule = weeklyScheduleRepository.GetCurrentWeekSchedule(currentWeekID).ToList();
-            return StatusCode(StatusCodes.Status200OK, ISOWeek.ToDateTime(2023, currentWeekNo, (DayOfWeek)1));
+            var nextWeekID = weekRepository.GetWeekByWeekNO(currentWeekNo + 1).IdWeek;
+            var scheduleCurrentNextWeeks = weeklyScheduleRepository.ReturnCurrentAndNextWeekSchedule(currentWeekID, nextWeekID).ToList();
+            List<WeeklySchedulesWithCustomersData> responseData = new List<WeeklySchedulesWithCustomersData>();
+            foreach (var weekDay in scheduleCurrentNextWeeks)
+            {
+                var weekData = weekRepository.GetWeekById(weekDay.WeekId);
+                var weekDayToDisplay = new WeeklySchedulesWithCustomersData(weekDay, engineerRepository,  weekData.WeekNo, weekData.YearNo);
+                responseData.Add(weekDayToDisplay);
+            }
+            responseData = responseData.OrderBy(weekDay => weekDay.WeekDayDate).ToList();
+            return StatusCode(StatusCodes.Status200OK, responseData);
+
+            //FOR TEST PURPOSES ##########
+            //List<TestModel> testModels = new List<TestModel>();
+            //foreach (var weekDay in weekDays)
+            //{
+            //    var testModel = new TestModel(weekDay, weekRepository, engineerRepository);
+            //    testModels.Add(testModel);
+            //}
+            //return StatusCode(StatusCodes.Status200OK, testModels);
+
 
         } 
         

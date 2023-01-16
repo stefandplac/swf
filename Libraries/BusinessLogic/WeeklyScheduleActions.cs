@@ -7,7 +7,7 @@ namespace swf.Libraries.BusinessLogic.WeeklySchedule
 {
     public static class WeeklyScheduleActions
     {
-        public static void Return2WeeksScheduleActionBuildRandom(
+        public static List<WeeklyScheduleModel>  Return2WeeksScheduleActionBuildRandom(
                                                       EngineerRepository engineerRepository,
                                                       WeekRepository weekRepository,
                                                       WeeklyScheduleRepository weeklyScheduleRepository
@@ -47,6 +47,7 @@ namespace swf.Libraries.BusinessLogic.WeeklySchedule
                     weeklyScheduleRepository.InsertManyWeekDaySchedule(weekScheduleToBeAdded);
 
                     //### GENERATE THE NEXT WEEK SCHEDULE
+                    weekScheduleToBeAdded = new List<WeeklyScheduleModel>();
                     PopulateFromDatabase(weekDays, engineersSelection, engineers, weeklyScheduleRepository, currentWeek);
                     Roast.Return2WeeksSchedule(engineers, startIndex, weekDays, engineersSelection);
                     WeekModel nextWeekModel = new WeekModel(Guid.NewGuid(), (short)(currentWeekNo + 1), currentYear, true);
@@ -66,7 +67,7 @@ namespace swf.Libraries.BusinessLogic.WeeklySchedule
                     WeekModel nextWeekModel = new WeekModel(Guid.NewGuid(), (short)(currentWeekNo+1), currentYear, true);
                     
                     CreateWeekScheduleToBeAdded(weekScheduleToBeAdded, weekDays, currentWeekModel, nextWeekModel, startIndex);
-                    
+
                     //ADDING DATA TO DATABASE
                     weekRepository.InsertWeek(currentWeekModel);
                     weekRepository.InsertWeek(nextWeekModel);
@@ -94,6 +95,8 @@ namespace swf.Libraries.BusinessLogic.WeeklySchedule
                     weeklyScheduleRepository.InsertManyWeekDaySchedule(weekScheduleToBeAdded);
                 }
             }
+            return weekScheduleToBeAdded;
+            
         }
 
         private static void PopulateFromDatabase(
