@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using swf.Data;
 using swf.Libraries;
 using swf.Libraries.BusinessLogic.WeeklySchedule;
@@ -12,6 +14,7 @@ using System.Globalization;
 
 namespace swf.Controllers
 {
+    [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class WeeklyScheduleController : ControllerBase
@@ -41,10 +44,12 @@ namespace swf.Controllers
             var nextWeekID = weekRepository.GetWeekByWeekNO(currentWeekNo + 1).IdWeek;
             var scheduleCurrentNextWeeks = weeklyScheduleRepository.ReturnCurrentAndNextWeekSchedule(currentWeekID, nextWeekID).ToList();
             List<WeeklySchedulesWithCustomersData> responseData = new List<WeeklySchedulesWithCustomersData>();
+            var firstWeekId = scheduleCurrentNextWeeks[0].WeekId;
             foreach (var weekDay in scheduleCurrentNextWeeks)
             {
                 var weekData = weekRepository.GetWeekById(weekDay.WeekId);
-                var weekDayToDisplay = new WeeklySchedulesWithCustomersData(weekDay, engineerRepository,  weekData.WeekNo, weekData.YearNo);
+                var weekNo = weekData.IdWeek == firstWeekId ? 1 : 2;
+                var weekDayToDisplay = new WeeklySchedulesWithCustomersData(weekDay, engineerRepository,  weekNo, weekData);
                 responseData.Add(weekDayToDisplay);
             }
             responseData = responseData.OrderBy(weekDay => weekDay.WeekDayDate).ToList();

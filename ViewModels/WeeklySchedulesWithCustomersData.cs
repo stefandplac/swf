@@ -15,11 +15,11 @@ namespace swf.ViewModels
                                                 WeeklyScheduleModel weeklySchedule,
                                                 EngineerRepository engineers,
                                                 int weekNo,
-                                                int year
+                                                WeekModel weekData
                                                 )
         {
             WeekNo = weekNo;
-            WeekDayDate = ISOWeek.ToDateTime(year,weekNo, (DayOfWeek)weeklySchedule.WeekDay);
+            WeekDayDate = ISOWeek.ToDateTime(weekData.YearNo,weekData.WeekNo, (DayOfWeek)weeklySchedule.WeekDay);
             MorningShiftEngineer = engineers.GetEngineerById(weeklySchedule.FirstHalfEngineerId).FullName;
             EveningShiftEngineer = engineers.GetEngineerById(weeklySchedule.SecondHalfEngineerId).FullName;
         }
