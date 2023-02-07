@@ -32,7 +32,7 @@ namespace swf.Controllers
         // GET: api/WeeklySchedule
         [HttpGet]
         [Route("Get2WeeksSchedule")]
-        public ActionResult Return2WeeksSchedule()
+        public Task<IActionResult> Return2WeeksSchedule()
         {
             //## 1
             var weekDays=WeeklyScheduleActions.Return2WeeksScheduleActionBuildRandom(engineerRepository, weekRepository, weeklyScheduleRepository);

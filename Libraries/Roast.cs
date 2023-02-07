@@ -109,6 +109,7 @@ namespace SWF
             var minShifts = engineersSelection.Min();
             if (engineersSelection[rndSelection]>=2 && minShifts < engineersSelection[rndSelection])
             {
+                
                 return false;
             }
 

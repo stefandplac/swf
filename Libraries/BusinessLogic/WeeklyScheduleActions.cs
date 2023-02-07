@@ -37,6 +37,7 @@ namespace swf.Libraries.BusinessLogic.WeeklySchedule
                     //## GENERATE THE CURRENT WEEK SCHEDULE
                     startIndex = 5;
                     PopulateFromDatabase(weekDays, engineersSelection, engineers, weeklyScheduleRepository, previousWeek);
+                    
                     Roast.Return2WeeksSchedule(engineers, startIndex, weekDays, engineersSelection);
                     WeekModel currentWeekModel = new WeekModel(Guid.NewGuid(), (short)(currentWeekNo), currentYear, true);
 
@@ -125,6 +126,8 @@ namespace swf.Libraries.BusinessLogic.WeeklySchedule
                                                         WeekModel week2,
                                                         int startIndex)
         {
+            
+            //transforming the array data to data that will be stored into the database
             for (int t = startIndex; t < weekDays.GetLength(1); t++)
             {
                 var weekDayToBeAdded = new WeeklyScheduleModel();
